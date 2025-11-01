@@ -1,0 +1,22 @@
+name: ci
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: microsoft/setup-msbuild@v2
+      
+      - run: msbuild .\MailSender.csproj /p:Configuration=Release /p:TargetFramework=net481
+      - run: Compress-Archive -Path "build/Release/*" -DestinationPath "MailSender.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: MailSender.zip
